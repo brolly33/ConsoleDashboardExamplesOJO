@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<BES>
+  <Wizard>
+    <Title>Fixlet Tester (DEV)</Title>
+    <UIHooks Menu="Fixlet Tester" NavBar="Fixlet Tester (DEV)" LaunchType="Document"></UIHooks>
+    <DefaultPage>Page1</DefaultPage>
+    <Page Name="Page1">
+      <Title>Fixlet Tester (DEV)</Title>
+      <HTML>
+        <![CDATA[
+        <script>
+        function FindComputerID() {
+          var out = EvaluateRelevance('id of bes computer whose (name of it as lowercase = "'+ComputerName.value+'" as lowercase) '); //to do: add in an error trap
+          ComputerID.innerText = out;
+        };
+        function GetFixletName() {
+          var out =  EvaluateRelevance('link of bes fixlet whose (name of site of it as lowercase  = "'+SiteName.value+'" as lowercase and id of it = '+FixletID.value+')'); //to do: add in an error trap
+          FixletName.innerHTML = out;
+          out = EvaluateRelevance('concatenation "<br><br>" of relevance clauses of bes fixlet whose (name of site of it as lowercase  = "'+SiteName.value+'" as lowercase and id of it = '+FixletID.value+')'); //to do: add in an error trap
+          FixletRelevance.innerHTML = out;
+          out = EvaluateRelevance('concatenation ", " of ("(" & it as html & ")") of relevance clauses of bes fixlet whose (name of site of it as lowercase  = "'+SiteName.value+'" as lowercase and id of it = '+FixletID.value+')'); //to do: add in an error trap
+          rawRelevance.innerHTML = out;
+        };
+        function MakeRESTQuery () {
+            var uri='clientquery';
+            var options='<BESAPI xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BESAPI.xsd"><ClientQuery><ApplicabilityRelevance>true</ApplicabilityRelevance>'+
+                        '<QueryText>' +  rawRelevance.innerHTML +'</QueryText><UseClientContext>true</UseClientContext>'+
+                        '<Target><ComputerName>' + ComputerName.value + '</ComputerName></Target>'+
+                        '</ClientQuery></BESAPI>';
+            API.Post (uri,options,function(errMessage, status, body){
+                QueryID.innerHTML=body;
+               });
+        };
+        function GetRESTQuery () {
+
+            var uri='clientqueryresults/' + QueryID.innerText;
+            var options='';
+            API.Get(uri,options,function(errMessage, status, body){
+                xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+                xmlDoc.async = false;
+                xmlDoc.loadXML(body);
+                if (xmlDoc.getElementsByTagName("Result")[0]) {
+                    var temp = xmlDoc.getElementsByTagName("Result")[0].childNodes[0].nodeValue;
+                    QueryOutput.innerHTML = temp.replace(/, /g , '<br><br>');
+                } else {QueryOutput.innerText  = ' waiting'};
+            })
+        };
+        </script>
+        <h1>Hello World V2</h1>
+        This is phase two of the dashboard<br>
+        Created by brolly33 on forum.bigfix.com  and bigfix.slack.com<br>
+        More great info on <a href='https://developer.bigfix.com/other/dashboard-api/'>https://developer.bigfix.com/other/dashboard-api/</a><br>
+        The Time is <?relevance now?><br><br>
+        <h5>Computer Section ------------------------ </h5>
+        My computers are <br>
+        <?relevance concatenation "<br>" of (links of bes computers)?>
+        <br><br>
+        <input id='ComputerName' value='brollytest'></input><br><br>
+        <button onClick='FindComputerID()'>1 Get Computer ID</button><br>
+        <div id='ComputerID'>0</div>
+        <h5>Fixlet Section ------------------------ </h5>
+        <input id='SiteName' value='BES Support'></input><br>
+        <input id='FixletID' value='1'></input><br>
+        <br><button onClick='GetFixletName()'>2 Get Fixlet Title</button><br>
+        <div id='FixletName'>0</div><br>
+        <div id='QueryID'>0</div><br>
+        <div id='rawRelevance'>0</div><br>
+        <table border='1'><tr>
+        <td><div id='FixletRelevance'>Press the Button ^^ </div></td>
+        <td><div id='QueryOutput'>Make a Query first</div></td>
+        </tr></table>
+        <br><button onClick='MakeRESTQuery()'>3 Make REST Query</button>
+        <button onClick='GetRESTQuery()'>4 Get REST Query Results</button><br>
+      ]]>
+      </HTML>
+    </Page>
+  </Wizard>
+  </BES>

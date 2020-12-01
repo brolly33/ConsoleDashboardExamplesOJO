@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<BES>
+  <Wizard>
+    <Title>Fixlet Tester (DEV)</Title>
+    <UIHooks Menu="Fixlet Tester" NavBar="Fixlet Tester (DEV)" LaunchType="Document"></UIHooks>
+    <DefaultPage>Page1</DefaultPage>
+    <Page Name="Page1">
+      <Title>Fixlet Tester (DEV)</Title>
+      <HTML>
+        <![CDATA[
+
+        <script>
+        function FindComputerID() {
+          var out = EvaluateRelevance('id of bes computer whose (name of it as lowercase = "'+ComputerName.value+'" as lowercase) '); //to do: add in an error trap
+          ComputerID.innerText = out;
+        };
+        function GetFixletName() {
+          var out =  EvaluateRelevance('link of bes fixlet whose (name of site of it as lowercase  = "'+SiteName.value+'" as lowercase and id of it = '+FixletID.value+')'); //to do: add in an error trap
+          FixletName.innerHTML = out;
+          out = EvaluateRelevance('concatenation "<br><br>" of relevance clauses of bes fixlet whose (name of site of it as lowercase  = "'+SiteName.value+'" as lowercase and id of it = '+FixletID.value+')'); //to do: add in an error trap
+          FixletRelevance.innerHTML = out;
+        };
+        </script>
+      
+        <h1>Hello World V1</h1>
+        This is phase one of the dashboard - please get phase 2 version for a more complete use case result<br>
+        Created by brolly33 on forum.bigfix.com  and bigfix.slack.com<br>
+        More great info on <a href='https://developer.bigfix.com/other/dashboard-api/'>https://developer.bigfix.com/other/dashboard-api/</a><br>
+        The Time is <?relevance now?><br><br>
+        <h5>Computer Section ------------------------ </h5>
+        My computers are <br>
+        <?relevance concatenation "<br>" of (links of bes computers)?>
+        <br><br>
+        <input id='ComputerName' value='brollytest'></input><br><br>
+        <button onClick='FindComputerID()'>Get Computer ID</button><br>
+        <div id='ComputerID'>0</div>
+        <h5>Fixlet Section ------------------------ </h5>
+        <input id='SiteName' value='BES Support'></input><br>
+        <input id='FixletID' value='1'></input><br>
+        <br><button onClick='GetFixletName()'>Get Fixlet Title</button><br>
+        <div id='FixletName'>0</div><br>
+        <table border='1'><tr>
+        <td><div id='FixletRelevance'>Press the Button ^^ </div></td>
+        <td><div id='QueryOutput'>Results still In Development</div></td>
+        </tr></table>
+	  ]]>
+      </HTML>
+    </Page>
+  </Wizard>
+</BES>
+
+
